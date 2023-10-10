@@ -111,11 +111,6 @@ public:
 		free(arr);
 	}
 
-	int GetSize()//获取数组元素个数
-	{
-		return m_size;
-	}
-
 	void pop_back()
 	{
 		T* arr = num;
@@ -162,7 +157,7 @@ public:
 
 	bool empty()//检查容器是否为空
 	{
-		if (GetSize() == 0)
+		if (size() == 0)
 		{
 			return true;
 		}
