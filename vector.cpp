@@ -98,14 +98,7 @@ public:
 	{
 
 		T* arr = num;
-		if (length != 0)
-		{
-			 length = length * 2;
-		}
-		else
-		{
-			 length = 1;
-		}
+		length = length * 2;
 		num = (T*)malloc(sizeof(T) * length);
 		memcpy(num, arr, sizeof(T) * m_size);
 		free(arr);
@@ -113,10 +106,6 @@ public:
 
 	void pop_back()
 	{
-		T* arr = num;
-		num = (T*)malloc(sizeof(T) * length);
-		memcpy(num, arr, sizeof(T) * (m_size - 1));
-		free(arr);
 		m_size--;
 	}
 
@@ -128,7 +117,7 @@ public:
 
 	int find_element(T target)//通过元素找下标
 	{
-		for (int i = 0; i < m_size; ++i)
+		for (int i = 0; i < size(); ++i)
 		{
 			if (num[i] == target)
 			{
@@ -140,7 +129,7 @@ public:
 
 	bool find(T target)//查找是否有这个元素
 	{
-		for (int i = 0; i < m_size; ++i)
+		for (int i = 0; i < size(); ++i)
 		{
 			if (num[i] == target)
 			{
@@ -188,7 +177,7 @@ public:
 		{
 			extendLength();
 		}
-		for (int i = m_size ; i > index; i--)
+		for (int i = size(); i > index; i--)
 		{
 			num[i] = num[i-1];
 		}
@@ -201,6 +190,7 @@ public:
 		{
 			num[i] = num[i + 1];
 		}
+		m_size--;
 	}
 
 	void swap(T &a,T &b)
@@ -212,7 +202,7 @@ public:
 
 
 private:
-	int length = 0;
+	int length = 1;
 	int m_size = 0;
 	T* num;
 public:
@@ -224,8 +214,30 @@ int vector<int>::no_pos = -1;
 int main()
 {
 	vector<int> arr;
-	arr = arr;
-	vector<int>arr1;
-	arr1=move(arr);
+	arr.push_back(1);
+	arr.push_back(1);
+	arr.push_back(1);
+	arr.push_back(1);
+	arr.push_back(1);
+	arr.push_back(1);
+	arr.push_back(1);
+	arr.push_back(1);
+	arr.push_back(1);
+	arr.push_back(1);
+	arr.push_back(1);
+	arr.push_back(1);
+	arr.pop_back();
+	arr.pop_back();
+	arr.push_back(1);
+	arr.capacity();
+	arr.change(1, 22);
+	arr.empty();
+	arr.erase(1);
+	arr.find(22);
+	arr.find_element(1);
+	arr.find_index(0);
+	arr.insert(4, 44);
+	arr.size();
+	arr.swap(arr[1], arr[0]);
 	return 0;
 }
