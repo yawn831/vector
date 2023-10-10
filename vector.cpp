@@ -13,7 +13,6 @@ public:
 	vector(int len)//构造数组
 	{
 		length = len;
-		prelength = len;
 		num = (T*)malloc(sizeof(T) * length);
 	}
 
@@ -25,12 +24,46 @@ public:
 		memcpy(num, res.num, sizeof(T) * length);
 	}
 
+	vector& operator=(const vector& res)
+	{
+		if (this != &res)
+		{
+			if (num != nullptr)
+			{
+				free(num);
+			}
+			this->length = res.length;
+			this->m_size = res.m_size;
+			num = (T*)malloc(sizeof(T) * (this->length));
+			memcpy(num, res.num, sizeof(T) * (this->length));
+		}
+		return *this;
+	}
+
 	vector(vector&& rhs) :
 		length{ rhs.length },num{rhs.num}
 	//move
 	{
 		rhs.length = 0;
 		rhs.num = nullptr;
+	}
+	
+	vector& operator=(vector&& rhs)
+	{
+		if (this != &rhs)
+		{
+			if (num != nullptr)
+			{
+				free(num);
+			}
+			this->num = rhs.num;
+			this->length = rhs.length;
+			this->m_size = rhs.m_size;
+			rhs.num = nullptr;
+			rhs.length = 0;
+			rhs.m_size = 0;
+		}
+		return *this;
 	}
 
 	~vector()
@@ -63,13 +96,19 @@ public:
 
 	void extendLength()//扩容算法
 	{
+
 		T* arr = num;
-		int newlength =prelength+ pow(2, m_index);
-		num = (T*)malloc(sizeof(T) * newlength);
+		if (length != 0)
+		{
+			 length = length * 2;
+		}
+		else
+		{
+			 length = 1;
+		}
+		num = (T*)malloc(sizeof(T) * length);
 		memcpy(num, arr, sizeof(T) * m_size);
 		free(arr);
-		length = newlength;
-		m_index++;
 	}
 
 	int GetSize()//获取数组元素个数
@@ -144,7 +183,6 @@ public:
 	{
 		num = nullptr;
 		m_size = 0;
-		m_index = 0;
 		length = 0;
 	}
 
@@ -179,8 +217,6 @@ public:
 
 
 private:
-	int prelength=0;
-	int m_index=0;
 	int length = 0;
 	int m_size = 0;
 	T* num;
@@ -193,26 +229,8 @@ int vector<int>::no_pos = -1;
 int main()
 {
 	vector<int> arr;
-	arr.push_back(11);
-	arr.push_back(12);
-	arr.push_back(11);
-	arr.push_back(12);
-	arr.push_back(11);
-	arr.push_back(11);
-	arr.push_back(12);
-	arr.pop_back();
-	arr.pop_back();
-	arr.pop_back();
-	arr.pop_back();
-	arr.capacity();
-	arr.change(0, 111);
-	arr.empty();
-	arr.erase(2);
-	arr.find(22);
-	arr.find_element(11);
-	arr.find_index(2);
-	arr.insert(3, 111);
-	arr.size();
-	arr.swap(arr[1], arr[3]);
+	arr = arr;
+	vector<int>arr1;
+	arr1=move(arr);
 	return 0;
 }
