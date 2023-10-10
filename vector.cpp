@@ -94,7 +94,7 @@ public:
 
 	int find_element(T target)//通过元素找下标
 	{
-		for (int i = 0; i < m_size; i++)
+		for (int i = 0; i < m_size; ++i)
 		{
 			if (num[i] == target)
 			{
@@ -106,7 +106,7 @@ public:
 
 	bool find(T target)//查找是否有这个元素
 	{
-		for (int i = 0; i < m_size; i++)
+		for (int i = 0; i < m_size; ++i)
 		{
 			if (num[i] == target)
 			{
@@ -164,15 +164,15 @@ public:
 
 	void erase(int index)
 	{
-		for (int i = index; i < size(); i++)
+		for (int i = index; i < size(); ++i)
 		{
 			num[i] = num[i + 1];
 		}
 	}
 
-	void swap(int &a,int &b)
+	void swap(T &a,T &b)
 	{
-		int tmp = a;
+		T tmp = a;
 		a = b;
 		b = tmp;
 	}
@@ -200,15 +200,19 @@ int main()
 	arr.push_back(11);
 	arr.push_back(11);
 	arr.push_back(12);
-	arr.push_back(11);
-	arr.push_back(12);
-	arr.push_back(11);
-	arr.push_back(12);
-	arr.push_back(11);
-	arr.push_back(12);
-	arr.push_back(11);
-	arr.push_back(12);
-	arr.push_back(12);
-	arr.swap(arr[0], arr[1]);
+	arr.pop_back();
+	arr.pop_back();
+	arr.pop_back();
+	arr.pop_back();
+	arr.capacity();
+	arr.change(0, 111);
+	arr.empty();
+	arr.erase(2);
+	arr.find(22);
+	arr.find_element(11);
+	arr.find_index(2);
+	arr.insert(3, 111);
+	arr.size();
+	arr.swap(arr[1], arr[3]);
 	return 0;
 }
