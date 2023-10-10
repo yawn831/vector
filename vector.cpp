@@ -13,6 +13,7 @@ public:
 	vector(int len)//构造数组
 	{
 		length = len;
+		prelength = len;
 		num = (T*)malloc(sizeof(T) * length);
 	}
 
@@ -63,7 +64,7 @@ public:
 	void extendLength()//扩容算法
 	{
 		T* arr = num;
-		int newlength =length+ pow(2, m_index);
+		int newlength =prelength+ pow(2, m_index);
 		num = (T*)malloc(sizeof(T) * newlength);
 		memcpy(num, arr, sizeof(T) * m_size);
 		free(arr);
@@ -178,6 +179,7 @@ public:
 
 
 private:
+	int prelength=0;
 	int m_index=0;
 	int length = 0;
 	int m_size = 0;
@@ -192,6 +194,20 @@ int main()
 {
 	vector<int> arr;
 	arr.push_back(11);
+	arr.push_back(12);
+	arr.push_back(11);
+	arr.push_back(12);
+	arr.push_back(11);
+	arr.push_back(11);
+	arr.push_back(12);
+	arr.push_back(11);
+	arr.push_back(12);
+	arr.push_back(11);
+	arr.push_back(12);
+	arr.push_back(11);
+	arr.push_back(12);
+	arr.push_back(11);
+	arr.push_back(12);
 	arr.push_back(12);
 	arr.swap(arr[0], arr[1]);
 	return 0;
