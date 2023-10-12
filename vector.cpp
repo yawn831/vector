@@ -71,7 +71,7 @@ public:
 	{
 		if (num != nullptr)
 		{
-			delete[]num;
+			free(num);
 		}
 	}
 
