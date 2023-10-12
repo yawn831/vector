@@ -17,13 +17,13 @@ public:
 	}
 
 	vector(const vector& res) :
-		length{ res.length }
+		length{ res.length },m_size{res.m_size}
 	//拷贝构造函数，当有两个vector时将一个vector赋值给另一个vector
 	{
 		num = (T*)malloc(sizeof(T) * length);
-		memcpy(num, res.num, sizeof(T) * length);
+		memcpy(num, res.num, sizeof(T) * m_size);
 	}
-
+	
 	vector& operator=(const vector& res)
 	{
 		if (this != &res)
@@ -34,20 +34,21 @@ public:
 			}
 			this->length = res.length;
 			this->m_size = res.m_size;
-			num = (T*)malloc(sizeof(T) * (this->length));
-			memcpy(num, res.num, sizeof(T) * (this->length));
+			num = (T*)malloc(sizeof(T) * res.length);
+			memcpy(num, res.num, sizeof(T) * res.m_size);
 		}
 		return *this;
 	}
 
 	vector(vector&& rhs) :
-		length{ rhs.length },num{rhs.num}
+		length{ rhs.length },num{rhs.num},m_size{rhs.m_size}
 	//move
 	{
+		rhs.m_size = 0;
 		rhs.length = 0;
 		rhs.num = nullptr;
 	}
-	
+
 	vector& operator=(vector&& rhs)
 	{
 		if (this != &rhs)
@@ -200,6 +201,71 @@ public:
 		b = tmp;
 	}
 
+	class iterator
+	{
+	public:
+		iterator(T* ptr)
+		{
+			m_ptr = ptr;
+		}
+
+		iterator()
+		{
+			m_ptr = nullptr;
+		}
+
+		~iterator(){}
+
+		iterator& operator++()//前置++
+		{
+			this->m_ptr++;
+			return *this;
+		}
+
+		iterator operator++(int)//后置++
+		{
+			iterator tmp = *this;
+			this->m_ptr++;
+			return tmp;
+		}
+
+		iterator& operator--()
+		{
+			this->m_ptr--;
+			return *this;
+		}
+
+		iterator operator--(int)//后置--
+		{
+			iterator tmp = *this;
+			this->m_ptr--;
+			return tmp;
+		}
+
+		bool operator!=(const iterator& it)const
+		{
+			return m_ptr != it.m_ptr;
+		}
+
+		T& operator*()
+		{
+			return *m_ptr;
+		}
+
+	private:
+		T* m_ptr;
+	};
+	
+	iterator begin() const
+	{
+		return iterator(num);
+	}
+
+	iterator end() const
+	{
+		return iterator(num + m_size);
+	}
+
 
 private:
 	int length = 1;
@@ -213,31 +279,11 @@ int vector<int>::no_pos = -1;
 
 int main()
 {
-	vector<int> arr;
+	vector<int> arr(3); 
 	arr.push_back(1);
-	arr.push_back(1);
-	arr.push_back(1);
-	arr.push_back(1);
-	arr.push_back(1);
-	arr.push_back(1);
-	arr.push_back(1);
-	arr.push_back(1);
-	arr.push_back(1);
-	arr.push_back(1);
-	arr.push_back(1);
-	arr.push_back(1);
-	arr.pop_back();
-	arr.pop_back();
-	arr.push_back(1);
-	arr.capacity();
-	arr.change(1, 22);
-	arr.empty();
-	arr.erase(1);
-	arr.find(22);
-	arr.find_element(1);
-	arr.find_index(0);
-	arr.insert(4, 44);
-	arr.size();
-	arr.swap(arr[1], arr[0]);
+	for (vector<int>::iterator it = arr.begin(); it != arr.end(); it++)
+	{
+		cout << (*it) << endl;
+	}
 	return 0;
 }
