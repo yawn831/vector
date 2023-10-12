@@ -87,7 +87,7 @@ public:
 
 	void push_back(T element)
 	{
-		if (m_size == length)
+		if (size() == capacity())
 		{
 			extendLength();
 		}
@@ -201,6 +201,34 @@ public:
 		b = tmp;
 	}
 
+
+
+	template<typename TT>
+	void empalce_back(TT&& t)
+	{
+		in(forward<TT>(t));
+	}
+
+	void in(const T& t)
+	{
+		if (size() == capacity())
+		{
+			extendLength();
+		}
+		num[size()] = t;
+		m_size++;
+	}
+
+	void in(T& t)
+	{
+		if (size() == capacity())
+		{
+			extendLength();
+		}
+		num[size()] = t;
+		m_size++;
+	}
+
 	class iterator
 	{
 	public:
@@ -279,8 +307,10 @@ int vector<int>::no_pos = -1;
 
 int main()
 {
-	vector<int> arr(3); 
-	arr.push_back(1);
+	vector<int> arr; 
+	int a = 10;
+	arr.empalce_back(10);
+	arr.empalce_back(a);
 	for (vector<int>::iterator it = arr.begin(); it != arr.end(); it++)
 	{
 		cout << (*it) << endl;
