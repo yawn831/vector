@@ -26,19 +26,10 @@ public:
 	
 	vector& operator=(const vector& res)
 	{
-		if (this != &res)
-		{
-			if (num != nullptr)
-			{
-				free(num);
-			}
-			this->length = res.length;
-			this->m_size = res.m_size;
-			num = (T*)malloc(sizeof(T) * res.length);
-			memcpy(num, res.num, sizeof(T) * res.m_size);
-		}
-		return *this;
+		vector temp(res);
+		return temp;
 	}
+
 
 	vector(vector&& rhs) :
 		length{ rhs.length },num{rhs.num},m_size{rhs.m_size}
@@ -85,7 +76,7 @@ public:
 		return num[index];
 	}
 
-	void push_back(T element)
+	void push_back(const T &element)
 	{
 		if (size() == capacity())
 		{
@@ -107,7 +98,10 @@ public:
 
 	void pop_back()
 	{
-		m_size--;
+		if (size() > 0)
+		{
+			m_size--;
+		}
 	}
 
 	T find_index(int index)//通过下标寻找
@@ -307,13 +301,13 @@ int vector<int>::no_pos = -1;
 
 int main()
 {
-	vector<int> arr; 
-	int a = 10;
-	arr.empalce_back(10);
-	arr.empalce_back(a);
-	for (vector<int>::iterator it = arr.begin(); it != arr.end(); it++)
-	{
-		cout << (*it) << endl;
-	}
+	vector<vector<char>>arr;
+	vector<char>a;
+	a.push_back('b');
+	a.push_back('b');
+	arr.push_back(a);
+	vector<int> vv;
+	const vector<int> ::iterator iter = vv.begin();
+	iter++;
 	return 0;
 }
