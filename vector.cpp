@@ -1,313 +1,345 @@
 #include<iostream>
 using namespace std;
 
-template<typename T>
+template <typename T>
 class vector
 {
 public:
-	vector()
-	{
-		num = (T*)malloc(sizeof(T) * length);
-	}
+    class iterator
+    {
+    public:
+        explicit iterator(T* InPtr)
+        {
+            Ptr = InPtr;
+        }
 
-	vector(int len)//构造数组
-	{
-		length = len;
-		num = (T*)malloc(sizeof(T) * length);
-	}
+        iterator()
+        {
+            Ptr = nullptr;
+        }
 
-	vector(const vector& res) :
-		length{ res.length },m_size{res.m_size}
-	//拷贝构造函数，当有两个vector时将一个vector赋值给另一个vector
-	{
-		num = (T*)malloc(sizeof(T) * length);
-		memcpy(num, res.num, sizeof(T) * m_size);
-	}
-	
-	vector& operator=(const vector& res)
-	{
-		vector temp(res);
-		return temp;
-	}
+        // 前置++
+        iterator& operator++()
+        {
+            ++this->Ptr;
+            return *this;
+        }
 
+        // 后置++
+        iterator operator++(int)
+        {
+            iterator tmp = *this;
+            ++this->Ptr;
+            return tmp;
+        }
 
-	vector(vector&& rhs) :
-		length{ rhs.length },num{rhs.num},m_size{rhs.m_size}
-	//move
-	{
-		rhs.m_size = 0;
-		rhs.length = 0;
-		rhs.num = nullptr;
-	}
+        iterator& operator--()
+        {
+            --this->Ptr;
+            return *this;
+        }
 
-	vector& operator=(vector&& rhs)
-	{
-		if (this != &rhs)
-		{
-			if (num != nullptr)
-			{
-				free(num);
-			}
-			this->num = rhs.num;
-			this->length = rhs.length;
-			this->m_size = rhs.m_size;
-			rhs.num = nullptr;
-			rhs.length = 0;
-			rhs.m_size = 0;
-		}
-		return *this;
-	}
+        // 后置--
+        iterator operator--(int)
+        {
+            iterator tmp = *this;
+            --this->Ptr;
+            return tmp;
+        }
 
-	~vector()
-	{
-		if (num != nullptr)
-		{
-			free(num);
-		}
-	}
+        bool operator!=(const iterator& InOther) const
+        {
+            return Ptr != InOther.Ptr;
+        }
 
-	T& operator[](int index)
-	{
-		return num[index];
-	}
+        bool operator==(const iterator& InOther) const
+        {
+            return Ptr == InOther.Ptr;
+        }
 
-	const T& operator[](int index) const
-	{
-		return num[index];
-	}
+        T& operator*()
+        {
+            return *Ptr;
+        }
 
-	void push_back(const T &element)
-	{
-		if (size() == capacity())
-		{
-			extendLength();
-		}
-		num[m_size] = element;
-		m_size++;
-	}
+        iterator operator+(int Index) const
+        {
+            if (Ptr + Index != nullptr)
+            {
+                return iterator(Ptr + Index);
+            }
+        }
 
-	void extendLength()//扩容算法
-	{
+        iterator operator-(int Index) const
+        {
+            if (Ptr - Index != nullptr)
+            {
+                return iterator(Ptr - Index);
+            }
+        }
 
-		T* arr = num;
-		length = length * 2;
-		num = (T*)malloc(sizeof(T) * length);
-		memcpy(num, arr, sizeof(T) * m_size);
-		free(arr);
-	}
+    private:
+        T* Ptr;
+    };
 
-	void pop_back()
-	{
-		if (size() > 0)
-		{
-			m_size--;
-		}
-	}
+    // @TODO no const
+    iterator begin() const
+    {
+        return iterator(Data);
+    }
 
-	T find_index(int index)//通过下标寻找
-	{
-		T findnum = num[index];
-		return findnum;
-	}
+    iterator end() const
+    {
+        return iterator(Data + Size);
+    }
 
-	int find_element(T target)//通过元素找下标
-	{
-		for (int i = 0; i < size(); ++i)
-		{
-			if (num[i] == target)
-			{
-				return i;
-			}
-		}
-		return no_pos;
-	}
+public:
+    vector() :
+        Capacity{ 1 },
+        Size{ 0 }
+    {
+        Data = static_cast<T*>(malloc(sizeof(T) * Capacity));
+    }
 
-	bool find(T target)//查找是否有这个元素
-	{
-		for (int i = 0; i < size(); ++i)
-		{
-			if (num[i] == target)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+    // 构造数组
+    explicit vector(const int InCapacity) :
+        Size{ 0 }
+    {
+        Capacity = InCapacity;
+        Data = static_cast<T*>(malloc(sizeof(T) * Capacity));
+    }
 
-	void change(int index, T changenum)
-	{
-		 num[index] = changenum;
-	}
+    // 拷贝构造函数，当有两个vector时将一个vector赋值给另一个vector
+    vector(const vector& InOther) :
+        Capacity{ InOther.Capacity },
+        Size{ InOther.Size }
+    {
+        Data = static_cast<T*>(malloc(sizeof(T) * Capacity));
+        copy(InOther.Data, InOther.Data + size(), Data);
+    }
 
-	bool empty()//检查容器是否为空
-	{
-		if (size() == 0)
-		{
-			return true;
-		}
-		return false;
-	}
+    vector& operator=(const vector& InOther)
+    {
+        if (this != &InOther)
+        {
+            if (Data != nullptr)
+            {
+                free(Data);
+            }
+            this->Capacity = InOther.Capacity;
+            this->Size = InOther.Size;
+            Data = (T*)malloc(sizeof(T) * (this->Capacity));
+            copy(InOther.Data, InOther.Data + size(), Data);
+        }
+        return *this;
+    }
 
-	int size()//返回容纳的元素数
-	{
-		return m_size;
-	}
+    // move
+    vector(vector&& InOther) noexcept :
+        Capacity{ InOther.Capacity },
+        Size{ InOther.Size },
+        Data{ InOther.Data }
+    {
+        InOther.Size = 0;
+        InOther.Capacity = 0;
+        InOther.Data = nullptr;
+    }
 
-	int capacity()//返回当前存储空间能够容纳的元素数
-	{
-		return length;
-	}
-	
-	void clear()
-	{
-		num = nullptr;
-		m_size = 0;
-		length = 0;
-	}
+    vector& operator=(vector&& InOther) noexcept
+    {
+        if (this != &InOther)
+        {
+            if (Data != nullptr)
+            {
+                free(Data);
+            }
+            this->Data = InOther.Data;
+            this->Capacity = InOther.Capacity;
+            this->Size = InOther.Size;
+            InOther.Data = nullptr;
+            InOther.Capacity = 0;
+            InOther.Size = 0;
+        }
+        return *this;
+    }
 
-	void insert(int index,T element)
-	{
-		m_size++;
-		if (m_size == length)
-		{
-			extendLength();
-		}
-		for (int i = size(); i > index; i--)
-		{
-			num[i] = num[i-1];
-		}
-		num[index] = element;
-	}
+    ~vector()
+    {
+        if (Data != nullptr)
+        {
+            free(Data);
+        }
+    }
 
-	void erase(int index)
-	{
-		for (int i = index; i < size(); ++i)
-		{
-			num[i] = num[i + 1];
-		}
-		m_size--;
-	}
+    T& operator[](int InIndex)
+    {
+        return Data[InIndex];
+    }
 
-	void swap(T &a,T &b)
-	{
-		T tmp = a;
-		a = b;
-		b = tmp;
-	}
+    const T& operator[](int InIndex) const
+    {
+        return Data[InIndex];
+    }
 
+    void push_back(const T& InElement)
+    {
+        if (size() == capacity())
+        {
+            extendLength();
+        }
+        Data[Size] = InElement;
+        Size++;
+    }
 
+    void push_back(T& InElement)
+    {
+        if (size() == capacity())
+        {
+            extendLength();
+        }
+        Data[Size] = InElement;
+        Size++;
+    }
 
-	template<typename TT>
-	void empalce_back(TT&& t)
-	{
-		in(forward<TT>(t));
-	}
+    void pop_back()
+    {
+        if (size() > 0)
+        {
+            Size--;
+        }
+    }
 
-	void in(const T& t)
-	{
-		if (size() == capacity())
-		{
-			extendLength();
-		}
-		num[size()] = t;
-		m_size++;
-	}
+    // 通过下标寻找
+    T find_index(int InIndex)
+    {
+        return Data[InIndex];
+    }
 
-	void in(T& t)
-	{
-		if (size() == capacity())
-		{
-			extendLength();
-		}
-		num[size()] = t;
-		m_size++;
-	}
+    // 通过元素找下标
+    int find_element(T InTarget)
+    {
+        for (int i = 0; i < size(); ++i)
+        {
+            if (Data[i] == InTarget)
+            {
+                return i;
+            }
+        }
+        return no_pos;
+    }
 
-	class iterator
-	{
-	public:
-		iterator(T* ptr)
-		{
-			m_ptr = ptr;
-		}
+    // 查找是否有这个元素
+    bool find(T InTarget)
+    {
+        for (int i = 0; i < size(); ++i)
+        {
+            if (Data[i] == InTarget)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
-		iterator()
-		{
-			m_ptr = nullptr;
-		}
+    // 检查容器是否为空
+    bool empty() const
+    {
+        return size() == 0;
+    }
 
-		~iterator(){}
+    // 返回容纳的元素数
+    int size() const
+    {
+        return Size;
+    }
 
-		iterator& operator++()//前置++
-		{
-			this->m_ptr++;
-			return *this;
-		}
+    // 返回当前存储空间能够容纳的元素数
+    int capacity() const
+    {
+        return Capacity;
+    }
 
-		iterator operator++(int)//后置++
-		{
-			iterator tmp = *this;
-			this->m_ptr++;
-			return tmp;
-		}
+    void clear()
+    {
+        free(Data);
+        Size = 0;
+        Capacity = 0;
+    }
 
-		iterator& operator--()
-		{
-			this->m_ptr--;
-			return *this;
-		}
+    void insert(const int InIndex, T InElement)
+    {
+        Size++;
+        if (Size == Capacity)
+        {
+            extendLength();
+        }
+        // https://stackoverflow.com/questions/16695958/why-to-avoid-postfix-operator-in-c
+        for (int i = size(); i > InIndex; --i)
+        {
+            Data[i] = Data[i - 1];
+        }
+        Data[InIndex] = InElement;
+    }
 
-		iterator operator--(int)//后置--
-		{
-			iterator tmp = *this;
-			this->m_ptr--;
-			return tmp;
-		}
+    void erase(const int InIndex)
+    {
+        for (int i = InIndex; i < size(); ++i)
+        {
+            Data[i] = Data[i + 1];
+        }
+        Size--;
+    }
 
-		bool operator!=(const iterator& it)const
-		{
-			return m_ptr != it.m_ptr;
-		}
+    void swap(T& InA, T& InB)
+    {
+        T tmp = InA;
+        InA = InB;
+        InB = tmp;
+    }
 
-		T& operator*()
-		{
-			return *m_ptr;
-		}
-
-	private:
-		T* m_ptr;
-	};
-	
-	iterator begin() const
-	{
-		return iterator(num);
-	}
-
-	iterator end() const
-	{
-		return iterator(num + m_size);
-	}
-
+    void emplace_back(T&& InElement)
+    {
+        push_back(forward<T>(InElement));
+    }
 
 private:
-	int length = 1;
-	int m_size = 0;
-	T* num;
+    // 扩容算法
+    void extendLength()
+    {
+        T* arr = Data;
+        Capacity = Capacity * 2;
+        Data = static_cast<T*>(malloc(sizeof(T) * Capacity));
+        copy(arr, arr + size(), Data);
+        free(arr);
+    }
+
 public:
-	static int no_pos;
+    static int no_pos;
+
+private:
+    int Capacity;
+    int Size;
+    T* Data;
 };
 
 int vector<int>::no_pos = -1;
 
 int main()
 {
-	vector<vector<char>>arr;
-	vector<char>a;
-	a.push_back('b');
-	a.push_back('b');
-	arr.push_back(a);
-	vector<int> vv;
-	const vector<int> ::iterator iter = vv.begin();
-	iter++;
-	return 0;
+    vector<char> a;
+    a.push_back('b');
+    a.push_back('b');
+    a.push_back('b');
+    a.push_back('b');
+    a.push_back('b');
+    a.push_back('b');
+    a.push_back('b');
+    a.push_back('b');
+    a.push_back('b');
+    a.push_back('b');
+    a.push_back('b');
+    a.push_back('b');
+    vector<char> b;
+    b = a;
+    return 0;
 }
